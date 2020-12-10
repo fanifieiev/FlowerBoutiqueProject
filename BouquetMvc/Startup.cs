@@ -11,6 +11,8 @@ using Microsoft.Extensions.Hosting;
 using BouquetEngine.Model;
 using BouquetEngine.Storage;
 using BouquetMvc.Servises;
+using Npgsql;
+
 
 namespace BouquetMvc
 {
@@ -27,8 +29,16 @@ namespace BouquetMvc
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            IBouquetStorage bouquetStorage = new BouquetListStorage();
-            IOrderStorage orderStorage = new OrderListStorage();
+
+            //PUT YOUR OWN CONNECTION HERE
+            var connection = new NpgsqlConnection(
+                "Host=isilo.db.elephantsql.com;Port=5432;Database=jqnjlqmz;" +
+                "Username=jqnjlqmz;Password=*****;"
+            );
+            connection.Open();
+
+            IBouquetStorage bouquetStorage = new BouquetDBStorage(connection);
+            IOrderStorage orderStorage = new OrderDBStorage(connection);
 
             services.AddSingleton<IBouquetStorage>(bouquetStorage);
             services.AddSingleton<IOrderStorage>(orderStorage);
